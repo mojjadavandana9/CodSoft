@@ -1,0 +1,85 @@
+#TASK-1:To-Do-List Application Uisng Python
+import os
+import json
+from datetime import datetime
+
+class TodoList:
+    def __init__(self, filename='todo.json'):
+        self.filename = filename
+        self.tasks = self.load_tasks()
+
+    def load_tasks(self):
+        if os.path.exists(self.filename):
+            with open(self.filename, 'r') as file:
+                return json.load(file)
+        else:
+            return []
+
+    def save_tasks(self):
+        with open(self.filename, 'w') as file:
+            json.dump(self.tasks, file, indent=2)
+
+    def show_tasks(self):
+        if not self.tasks:
+            print("No tasks found.")
+        else:
+            print("Your To-Do List:")
+            for idx, task in enumerate(self.tasks, start=1):
+                print(f"{idx}. {task['title']} - {task['date']}")
+
+    def add_task(self, title, date):
+        task = {'title': title, 'date': date}
+        self.tasks.append(task)
+        self.save_tasks()
+        print(f"Task '{title}' added successfully.")
+
+    def update_task(self, index, new_title, new_date):
+        if 1 <= index <= len(self.tasks):
+            task = self.tasks[index - 1]
+            task['title'] = new_title
+            task['date'] = new_date
+            self.save_tasks()
+            print(f"Task {index} updated successfully.")
+        else:
+            print("Invalid task index.")
+
+    def remove_task(self, index):
+        if 1 <= index <= len(self.tasks):
+            removed_task = self.tasks.pop(index - 1)
+            self.save_tasks()
+            print(f"Task '{removed_task['title']}' removed successfully.")
+        else:
+            print("Invalid task index.")
+
+def main():
+    todo_list = TodoList()
+
+    while True:
+        print("\n1. Show Tasks\n2. Add Task\n3. Update Task\n4. Remove Task\n5. Exit")
+        choice = input("Enter your choice (1-5): ")
+
+        if choice == '1':
+            todo_list.show_tasks()
+        elif choice == '2':
+            title = input("Enter task title: ")
+            date = input("Enter task date (YYYY-MM-DD): ")
+            todo_list.add_task(title, date)
+        elif choice == '3':
+            todo_list.show_tasks()
+            index = int(input("Enter the index of the task to update: "))
+            new_title = input("Enter new task title: ")
+            new_date = input("Enter new task date (YYYY-MM-DD): ")
+            todo_list.update_task(index, new_title, new_date)
+        elif choice == '4':
+            todo_list.show_tasks()
+            index = int(input("Enter the index of the task to remove: "))
+            todo_list.remove_task(index)
+        elif choice == '5':
+            print("Exiting the To-Do List application. Have a great day!")
+            break
+        else:
+            print("Invalid choice. Please enter a number between 1 and 5.")
+
+if __name__ == "__main__":
+    main()
+
