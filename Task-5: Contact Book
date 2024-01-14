@@ -1,0 +1,100 @@
+#Task-5: Contact Book Using Python
+import json
+
+class ContactBook:
+    def __init__(self, filename='contacts.json'):
+        self.filename = filename
+        self.contacts = self.load_contacts()
+
+    def load_contacts(self):
+        if not self.contacts_exist():
+            return []
+        with open(self.filename, 'r') as file:
+            return json.load(file)
+
+    def save_contacts(self):
+        with open(self.filename, 'w') as file:
+            json.dump(self.contacts, file, indent=2)
+
+    def contacts_exist(self):
+        return bool(open(self.filename, 'a').read(1))
+
+    def add_contact(self, name, phone, email, address):
+        contact = {'name': name, 'phone': phone, 'email': email, 'address': address}
+        self.contacts.append(contact)
+        self.save_contacts()
+        print(f"Contact '{name}' added successfully.")
+
+    def view_contacts(self):
+        if not self.contacts:
+            print("No contacts found.")
+        else:
+            print("Contact List:")
+            for idx, contact in enumerate(self.contacts, start=1):
+                print(f"{idx}. {contact['name']} - {contact['phone']} - {contact['email']} - {contact['address']}")
+
+    def search_contact(self, keyword):
+        results = [contact for contact in self.contacts if keyword.lower() in contact['name'].lower()]
+        if not results:
+            print("No matching contacts found.")
+        else:
+            print(f"Matching Contacts for '{keyword}':")
+            for idx, contact in enumerate(results, start=1):
+                print(f"{idx}. {contact['name']} - {contact['phone']} - {contact['email']} - {contact['address']}")
+
+    def update_contact(self, index, name, phone, email, address):
+        if 1 <= index <= len(self.contacts):
+            contact = self.contacts[index - 1]
+            contact.update({'name': name, 'phone': phone, 'email': email, 'address': address})
+            self.save_contacts()
+            print(f"Contact {index} updated successfully.")
+        else:
+            print("Invalid contact index.")
+
+    def delete_contact(self, index):
+        if 1 <= index <= len(self.contacts):
+            deleted_contact = self.contacts.pop(index - 1)
+            self.save_contacts()
+            print(f"Contact '{deleted_contact['name']}' deleted successfully.")
+        else:
+            print("Invalid contact index.")
+
+def main():
+    contact_book = ContactBook()
+
+    while True:
+        print("\n1. Add Contact\n2. View Contacts\n3. Search Contact\n4. Update Contact\n5. Delete Contact\n6. Exit")
+        choice = input("Enter your choice (1-6): ")
+
+        if choice == '1':
+            name = input("Enter contact name: ")
+            phone = input("Enter contact phone number: ")
+            email = input("Enter contact email address: ")
+            address = input("Enter contact address: ")
+            contact_book.add_contact(name, phone, email, address)
+        elif choice == '2':
+            contact_book.view_contacts()
+        elif choice == '3':
+            keyword = input("Enter keyword to search: ")
+            contact_book.search_contact(keyword)
+        elif choice == '4':
+            contact_book.view_contacts()
+            index = int(input("Enter the index of the contact to update: "))
+            name = input("Enter updated contact name: ")
+            phone = input("Enter updated contact phone number: ")
+            email = input("Enter updated contact email address: ")
+            address = input("Enter updated contact address: ")
+            contact_book.update_contact(index, name, phone, email, address)
+        elif choice == '5':
+            contact_book.view_contacts()
+            index = int(input("Enter the index of the contact to delete: "))
+            contact_book.delete_contact(index)
+        elif choice == '6':
+            print("Exiting the Contact Book application. Goodbye!")
+            break
+        else:
+            print("Invalid choice. Please enter a number between 1 and 6.")
+
+if __name__ == "__main__":
+    main()
+
